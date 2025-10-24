@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302275656,
+  "operation": {
+    "id": "webapp:react:root",
+    "refs": {
+      "id": "app",
+      "version": "1761302187828"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/App.tsx",
+      "type": "text",
+      "size": 156,
+      "dependencies": false
+    }
+  ]
+}

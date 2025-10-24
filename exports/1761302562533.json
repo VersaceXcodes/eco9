@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302562533,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_GoalSetting",
+      "version": "latest"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_GoalSetting.tsx",
+      "type": "text",
+      "size": 10360,
+      "dependencies": false
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302756490,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_ActivityForm",
+      "version": "1761302637007"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_ActivityForm.tsx",
+      "type": "text",
+      "size": 14677,
+      "dependencies": false
+    }
+  ]
+}

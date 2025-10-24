@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302516496,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_ChallengeDetail",
+      "version": "1761302372673"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_ChallengeDetail.tsx",
+      "type": "text",
+      "size": 11586,
+      "dependencies": false
+    }
+  ]
+}

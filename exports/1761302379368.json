@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302379368,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_OnboardingTutorial",
+      "version": "latest"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_OnboardingTutorial.tsx",
+      "type": "text",
+      "size": 4069,
+      "dependencies": false
+    }
+  ]
+}

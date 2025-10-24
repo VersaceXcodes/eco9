@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302358576,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_OnboardingQuiz",
+      "version": "latest"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_OnboardingQuiz.tsx",
+      "type": "text",
+      "size": 6498,
+      "dependencies": false
+    }
+  ]
+}

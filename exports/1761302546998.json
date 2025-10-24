@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302546998,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_EventCalendar",
+      "version": "latest"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_EventCalendar.tsx",
+      "type": "text",
+      "size": 219,
+      "dependencies": false
+    }
+  ]
+}

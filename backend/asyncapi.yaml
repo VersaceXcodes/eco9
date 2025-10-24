@@ -1,0 +1,222 @@
+asyncapi: 2.0.0
+info:
+  title: eco9 Realtime Backend AsyncAPI Specification
+  version: 1.0.0
+  description: Realtime events and schemas for eco9 features based on Zod schemas
+servers:
+  - url: http://localhost:3000
+    protocol: websocket
+    description: Development server for realtime communication
+channels:
+  users.user.created:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/User"
+    description: Emitted when a new user is created
+  users.user.updated:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/User"
+    description: Emitted when a user profile is updated
+  users.user.deleted:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/User"
+    description: Emitted when a user account is deleted
+  activities.activity.created:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Post"
+    description: Emitted when a new activity is logged
+  activities.activity.updated:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Post"
+    description: Emitted when an activity is modified
+  activities.activity.deleted:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Post"
+    description: Emitted when an activity is deleted
+  comments.comment.created:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Comment"
+    description: Emitted when a new comment is added
+  comments.comment.updated:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Comment"
+    description: Emitted when a comment is modified
+  comments.comment.deleted:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Comment"
+    description: Emitted when a comment is removed
+  likes.like.created:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Like"
+    description: Emitted when a like is added
+  likes.like.deleted:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Like"
+    description: Emitted when a like is removed
+  dashboard.impact.updated:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/ImpactMetrics"
+    description: Emitted when user impact metrics change
+  challenges.challenge.joined:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/ChallengeParticipation"
+    description: Emitted when a user joins a challenge
+  challenges.leaderboard.updated:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/LeaderboardUpdate"
+    description: Emitted when challenge leaderboard changes
+  notifications.activity.reminder:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Notification"
+    description: Sent as activity reminder notification
+  notifications.challenge.update:
+    publish:
+      message:
+        schema:
+          $ref: "#/components/schemas/Notification"
+    description: Sent for challenge progress updates
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password_hash:
+          type: string
+        full_name:
+          type: string
+          nullable: true
+        profile_image_url:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+          nullable: true
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        post_id:
+          type: string
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Like:
+      type: object
+      properties:
+        user_id:
+          type: string
+        post_id:
+          type: string
+          nullable: true
+        comment_id:
+          type: string
+          nullable: true
+    ImpactMetrics:
+      type: object
+      properties:
+        co2_saved:
+          type: number
+        water_conserved:
+          type: number
+        waste_diverted:
+          type: number
+        trees_saved:
+          type: number
+    ChallengeParticipation:
+      type: object
+      properties:
+        user_id:
+          type: string
+        challenge_id:
+          type: string
+        joined_at:
+          type: string
+          format: date-time
+    LeaderboardUpdate:
+      type: object
+      properties:
+        challenge_id:
+          type: string
+        user_rank:
+          type: integer
+        points:
+          type: number
+        position_change:
+          type: integer
+    Notification:
+      type: object
+      properties:
+        user_id:
+          type: string
+        type:
+          type: string
+          enum:
+            - activity_reminder
+            - challenge_update
+            - new_content
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time

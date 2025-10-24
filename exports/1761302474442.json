@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302474442,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_Error500",
+      "version": "1761302437880"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_Error500.tsx",
+      "type": "text",
+      "size": 1429,
+      "dependencies": false
+    }
+  ]
+}

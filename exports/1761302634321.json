@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302634321,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "GV_NotificationBanner",
+      "version": "latest"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/GV_NotificationBanner.tsx",
+      "type": "text",
+      "size": 2632,
+      "dependencies": false
+    }
+  ]
+}

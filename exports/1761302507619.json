@@ -1,0 +1,19 @@
+{
+  "timestamp": 1761302507619,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_ImpactDashboard",
+      "version": "1761302427159"
+    }
+  },
+  "projectId": "eco9",
+  "files": [
+    {
+      "path": "/mnt/data/eco9/vitereact/src/components/views/UV_ImpactDashboard.tsx",
+      "type": "text",
+      "size": 11202,
+      "dependencies": false
+    }
+  ]
+}

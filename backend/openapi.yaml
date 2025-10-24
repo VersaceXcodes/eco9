@@ -1,0 +1,956 @@
+|-
+```yaml
+openapi: 3.0.0
+info:
+  title: eco9 API Specification
+  description: User-facing API for eco9 sustainability tracking app
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        full_name:
+          type: string
+          nullable: true
+        profile_image_url:
+          type: string
+          nullable: true
+      required: [id, username, email]
+
+    CreateUserInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password_hash:
+          type: string
+        full_name:
+          type: string
+          nullable: true
+          required: false
+        profile_image_url:
+          type: string
+          nullable: true
+          required: false
+      required: [username, email, password_hash]
+
+    UpdateUserInput:
+      type: object
+      properties:
+        username:
+          type: string
+          required: false
+        email:
+          type: string
+          required: false
+        password_hash:
+          type: string
+          required: false
+        full_name:
+          type: string
+          nullable: true
+          required: false
+        profile_image_url:
+          type: string
+          nullable: true
+          required: false
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        category:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        timestamp:
+          type: string
+        impact:
+          type: object
+          properties:
+            co2_saved:
+              type: number
+            water_conserved:
+              type: number
+          required: [co2_saved, water_conserved]
+
+    CreateActivityInput:
+      type: object
+      properties:
+        category:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        timestamp:
+          type: string
+          required: false
+        notes:
+          type: string
+          nullable: true
+          required: false
+      required: [category, value, unit]
+
+    UpdateActivityInput:
+      type: object
+      properties:
+        category:
+          type: string
+          required: false
+        value:
+          type: number
+          required: false
+        unit:
+          type: string
+          required: false
+        timestamp:
+          type: string
+          required: false
+        notes:
+          type: string
+          nullable: true
+          required: false
+
+    Goal:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        title:
+          type: string
+        target_value:
+          type: number
+        target_unit:
+          type: string
+        deadline:
+          type: string
+        progress:
+          type: number
+        created_at:
+          type: string
+
+    CreateGoalInput:
+      type: object
+      properties:
+        title:
+          type: string
+        target_value:
+          type: number
+        target_unit:
+          type: string
+        deadline:
+          type: string
+          required: false
+      required: [title, target_value, target_unit]
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+    EducationalContent:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content_type:
+          type: string
+        category:
+          type: string
+        content:
+          type: string
+        media_url:
+          type: string
+          nullable: true
+
+    Reward:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        point_cost:
+          type: number
+        description:
+          type: string
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        message:
+          type: string
+        read:
+          type: boolean
+        created_at:
+          type: string
+
+  parameters:
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    ActivityId:
+      name: activity_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    GoalId:
+      name: goal_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    ChallengeId:
+      name: challenge_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    RewardId:
+      name: reward_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    NotificationId:
+      name: notification_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+      required: false
+      default: 10
+
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+      required: false
+      default: 0
+
+    SortBy:
+      name: sort_by
+      in: query
+      schema:
+        type: string
+      required: false
+
+    SortOrder:
+      name: sort_order
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+      required: false
+      default: desc
+
+    CategoryFilter:
+      name: category
+      in: query
+      schema:
+        type: string
+      required: false
+
+    RangeFilter:
+      name: range
+      in: query
+      schema:
+        type: string
+        enum: [daily, weekly, monthly]
+      required: false
+
+    SearchQuery:
+      name: q
+      in: query
+      schema:
+        type: string
+      required: false
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  auth_token:
+                    type: string
+
+  /api/auth/login:
+    post:
+      summary: Login to existing account
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password_hash:
+                  type: string
+              required: [email, password_hash]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  auth_token:
+                    type: string
+
+  /api/users/{user_id}:
+    get:
+      summary: Get user profile
+      operationId: getUserProfile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    put:
+      summary: Update user profile
+      operationId: updateUserProfile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    delete:
+      summary: Delete user account
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
+
+  /api/activities:
+    get:
+      summary: List user activities
+      operationId: listActivities
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - $ref: '#/components/parameters/CategoryFilter'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+
+    post:
+      summary: Create new activity
+      operationId: createActivity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityInput'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+
+  /api/activities/{activity_id}:
+    get:
+      summary: Get specific activity
+      operationId: getActivity
+      parameters:
+        - $ref: '#/components/parameters/ActivityId'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+
+    put:
+      summary: Update activity
+      operationId: updateActivity
+      parameters:
+        - $ref: '#/components/parameters/ActivityId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivityInput'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+
+    delete:
+      summary: Delete activity
+      operationId: deleteActivity
+      parameters:
+        - $ref: '#/components/parameters/ActivityId'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
+
+  /api/impact:
+    get:
+      summary: Get user impact metrics
+      operationId: getUserImpact
+      parameters:
+        - $ref: '#/components/parameters/RangeFilter'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  co2_saved:
+                    type: number
+                  water_conserved:
+                    type: number
+                  waste_diverted:
+                    type: number
+                  trees_saved:
+                    type: number
+                  historical_data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                        co2_saved:
+                          type: number
+                        water_conserved:
+                          type: number
+
+  /api/goals:
+    get:
+      summary: List user goals
+      operationId: listGoals
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+
+    post:
+      summary: Create new goal
+      operationId: createGoal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGoalInput'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+
+  /api/goals/{goal_id}:
+    get:
+      summary: Get specific goal
+      operationId: getGoal
+      parameters:
+        - $ref: '#/components/parameters/GoalId'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+
+    put:
+      summary: Update goal
+      operationId: updateGoal
+      parameters:
+        - $ref: '#/components/parameters/GoalId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: false
+                target_value:
+                  type: number
+                  required: false
+                target_unit:
+                  type: string
+                  required: false
+                deadline:
+                  type: string
+                  required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+
+    delete:
+      summary: Delete goal
+      operationId: deleteGoal
+      parameters:
+        - $ref: '#/components/parameters/GoalId'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
+
+  /api/challenges:
+    get:
+      summary: List available challenges
+      operationId: listChallenges
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: challenge_type
+          in: query
+          schema:
+            type: string
+            enum: [individual, group]
+          required: false
+        - name: duration
+          in: query
+          schema:
+            type: string
+            enum: [1week, 1month]
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
+
+    post:
+      summary: Create new challenge
+      operationId: createChallenge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                challenge_type:
+                  type: string
+                  enum: [individual, group]
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+
+  /api/challenges/{challenge_id}:
+    get:
+      summary: Get challenge details
+      operationId: getChallenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+
+    put:
+      summary: Update challenge
+      operationId: updateChallenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: false
+                description:
+                  type: string
+                  required: false
+                start_date:
+                  type: string
+                  required: false
+                end_date:
+                  type: string
+                  required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+
+    delete:
+      summary: Delete challenge
+      operationId: deleteChallenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
+
+    post:
+      summary: Join challenge
+      operationId: joinChallenge
+      parameters:
+        - $ref: '#/components/parameters/ChallengeId'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+
+  /api/educational_contents:
+    get:
+      summary: List educational content
+      operationId: listEducationalContents
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - $ref: '#/components/parameters/CategoryFilter'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EducationalContent'
+
+    get:
+      summary: Get specific educational content
+      operationId: getEducationalContent
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EducationalContent'
+
+  /api/rewards:
+    get:
+      summary: List available rewards
+      operationId: listRewards
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reward'
+
+    post:
+      summary: Redeem reward
+      operationId: redeemReward
+      parameters:
+        - $ref: '#/components/parameters/RewardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  remaining_points:
+                    type: number
+
+  /api/notifications:
+    get:
+      summary: List user notifications
+      operationId: listNotifications
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+    put:
+      summary: Mark notification as read
+      operationId: markNotificationRead
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                read:
+                  type: boolean
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+  /api/achievements:
+    get:
+      summary: List user achievements
+      operationId: listAchievements
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    unlocked_at:
+                      type: string
